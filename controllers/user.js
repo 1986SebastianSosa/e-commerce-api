@@ -37,7 +37,22 @@ const show = async (req, res) => {
 
 // Store a newly created resource in storage.
 const store = async (req, res) => {
+  console.log("register");
   let { firstName, lastName, email, password, address, phone } = req.body;
+
+  if (!firstName || !lastName || !address || !password || !email || !phone) {
+    return res
+      .status(400)
+      .json({ msg: "Some register information is missing" });
+  }
+
+  const duplicateEmail = await User.findOne({ email });
+  if (duplicateEmail) {
+    return res
+      .status(409)
+      .json({ msg: "There's already an account with that email address" });
+  }
+
   const hashedPassword = await User.hashPassword(password);
   try {
     const user = await User.create({
@@ -54,7 +69,9 @@ const store = async (req, res) => {
     };
     res.status(201).json(response);
   } catch (error) {
-    res.status(400).json(error);
+    res
+      .status(500)
+      .json({ msj: "Something went wrong. Please try again", error });
   }
 };
 

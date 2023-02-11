@@ -3,17 +3,23 @@ const { Admin } = require("../db/models/admin");
 const { User } = require("../db/models/user");
 
 // Display the specified resource.
-const showUser = async (req, res) => {
+const loginUser = async (req, res) => {
   const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ msg: "Some login information is missing" });
+  }
 
   try {
     const user = await User.findOne({ email });
 
-    if (!user) return res.json(401);
+    if (!user)
+      return res.status(401).json({ msg: "Credentials are not correct" });
 
     const comparePass = await User.comparePassword(password, user.password);
 
-    if (!comparePass) return res.json(401);
+    if (!comparePass)
+      return res.status(401).json({ msg: "Credentials are not correct" });
 
     let response = {
       ...user._doc,
@@ -21,22 +27,27 @@ const showUser = async (req, res) => {
     };
     res.status(200).json(response);
   } catch (error) {
-    res.status(400).json(error);
-    console.log("error showUser login", error);
+    res.status(500).json(error);
+    console.log("error in loginUser", error);
   }
 };
 
-const showAdmin = async (req, res) => {
+const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("admin login");
+
+  if (!email || !password) {
+    return res.status(400).json({ msg: "Some login information is missing" });
+  }
+
   try {
     const admin = await Admin.findOne({ email });
 
-    if (!admin) return res.status(401).json("credentials error");
+    if (!admin) return res.status(401).json("Credentials are not correct");
 
     const comparePass = await Admin.comparePassword(password, admin.password);
 
-    if (!comparePass) return res.status(401).json("credentials error");
+    if (!comparePass)
+      return res.status(401).json("Credentials are not correct");
 
     let response = {
       ...admin._doc,
@@ -44,12 +55,9 @@ const showAdmin = async (req, res) => {
     };
     res.status(200).json(response);
   } catch (error) {
-    console.log("error showUser admin", error);
+    console.log("error in loginAdmin", error);
   }
 };
-
-// Store a newly created resource in storage.
-const store = async (req, res) => {};
 
 const makeToken = (email, id, type) => {
   const secret =
@@ -60,7 +68,6 @@ const makeToken = (email, id, type) => {
 };
 
 module.exports = {
-  showUser,
-  showAdmin,
-  store,
+  loginUser,
+  loginAdmin,
 };
