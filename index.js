@@ -14,7 +14,7 @@ const userRoutes = require("./routes/userRoutes");
 const initialSetup = require("./seeders/initialSetup");
 const usage = require("./usage.json");
 const corsOptions = require("./config/corsOptions");
-const { credentials } = require("./config/corsOptions");
+const credentials = require("./middlewares/credentials");
 const PORT = process.env.APP_PORT || 3022;
 
 app.use(credentials);
