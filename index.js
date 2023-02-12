@@ -13,9 +13,10 @@ const tokensRoutes = require("./routes/tokensRoutes");
 const userRoutes = require("./routes/userRoutes");
 const initialSetup = require("./seeders/initialSetup");
 const usage = require("./usage.json");
+const corsOptions = require("./config/corsOptions");
 const PORT = process.env.APP_PORT || 3022;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
